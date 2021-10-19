@@ -2,6 +2,9 @@
     "name": "live-photo-submissions",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": "14.16.0"
+    },
     "dependencies": {
         "@reduxjs/toolkit": "^1.6.2",
         "@testing-library/jest-dom": "^4.2.4",
