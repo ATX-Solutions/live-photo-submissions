@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 
 import App from './App';
 
-import { store } from './app/store';
+import { store } from '../../redux/store';
 
 test('healty check', () => {
     const { getByText } = render(
