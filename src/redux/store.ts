@@ -1,7 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
+import images from './images';
+
 export const store = configureStore({
-    reducer: {},
+    reducer: {
+        images,
+    },
 });
 
 export type AppDispatch = typeof store.dispatch;

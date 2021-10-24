@@ -1,5 +1,5 @@
-import { Button, Paper, Typography, Box, Chip } from '@mui/material';
 import { useState } from 'react';
+import { Button, Paper, Typography, Box, Chip } from '@mui/material';
 
 interface Quote {
     text: string;
@@ -7,7 +7,7 @@ interface Quote {
     tag: string;
 }
 
-function App() {
+const Quotes = () => {
     const [loading, setLoading] = useState(false);
     const [quote, setQuote] = useState({} as Quote);
 
@@ -44,6 +44,6 @@ function App() {
             ) : null}
         </div>
     );
-}
+};
 
-export default App;
+export default Quotes;
