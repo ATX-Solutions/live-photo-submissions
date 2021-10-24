@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Typography, Box } from '@mui/material';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeGrid as Grid } from 'react-window';
+
 import AutoSizer from 'react-virtualized-auto-sizer';
 
-import { addImage } from '../../redux/images';
+import { addImage, resetState } from '../../redux/images';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
 // @ts-ignore
-const Row = ({ index, style }) => {
+const Row = ({ columnIndex, rowIndex, style }) => {
     const { results } = useAppSelector((state) => state.images);
+    const index = 3 * rowIndex + columnIndex;
     const photo = results[index];
+    if (!photo) return null;
     return (
         <div style={style}>
-            <img src={photo.src.tiny} alt={'test'} key={index} />
+            <Box sx={{ m: 2 }}>
+                <img src={photo.src.tiny} alt={'test'} key={index} />
+            </Box>
         </div>
     );
 };
@@ -33,6 +38,11 @@ const Homepage = () => {
             console.log(photo);
             dispatch(addImage(photo));
         };
+
+        return () => {
+            evtSource.close();
+            dispatch(resetState());
+        };
     }, []);
 
     return (
@@ -41,12 +51,19 @@ const Homepage = () => {
                 {SSEConnected ? "Aaaaannnnnd we're live!!!" : 'Connecting to the live stream...'}
             </Typography>
 
-            <Box sx={{ p: 4, height: '80vh' }}>
+            <Box sx={{ p: 4, height: '80vh', width: '936px', margin: '0 auto' }}>
                 <AutoSizer>
                     {({ height, width }: { height: number; width: number }) => (
-                        <List height={height} itemCount={results.length} itemSize={200} width={width}>
+                        <Grid
+                            columnCount={3}
+                            columnWidth={280 + 32}
+                            height={height}
+                            rowCount={Math.ceil(results.length / 3)}
+                            rowHeight={200 + 32}
+                            width={width}
+                        >
                             {Row}
-                        </List>
+                        </Grid>
                     )}
                 </AutoSizer>
             </Box>
