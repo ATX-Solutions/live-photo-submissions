@@ -17,14 +17,14 @@ const AppNavigation = () => {
             <MenuIcon />
           </IconButton> */}
                 <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-                    Photos
+                    <NavLink to={'/'}>Photos</NavLink>
                 </Typography>
                 {/* <NavigationLink to={'/'} label={'Home'} /> */}
                 <Button color='inherit' component={NavLink} to='/'>
                     Home
                 </Button>
-                <Button color='inherit' component={NavLink} to='/quotes'>
-                    Quotes
+                <Button color='inherit' component={NavLink} to='/about'>
+                    About
                 </Button>
             </Toolbar>
         </AppBar>

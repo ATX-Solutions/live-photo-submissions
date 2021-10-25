@@ -8,8 +8,9 @@ import { store } from './redux/store';
 import * as serviceWorker from './serviceWorker';
 
 import './index.scss';
+import { setToken } from './utils/axios';
 
-// 563492ad6f91700001000001d5c577a776b84794b80df25211170944
+setToken(process.env.REACT_APP_API_TOKEN as string);
 
 ReactDOM.render(
     <React.StrictMode>

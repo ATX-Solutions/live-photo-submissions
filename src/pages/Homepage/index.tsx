@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Typography, Box } from '@mui/material';
 import { FixedSizeGrid as Grid } from 'react-window';
@@ -16,7 +17,9 @@ const Row = ({ columnIndex, rowIndex, style }) => {
     return (
         <div style={style}>
             <Box sx={{ m: 2 }}>
-                <img src={photo.src.tiny} alt={'test'} key={index} />
+                <Link to={`/images/${photo.id}`}>
+                    <img src={photo.src.tiny} alt={'test'} key={index} />
+                </Link>
             </Box>
         </div>
     );
@@ -28,19 +31,31 @@ const Homepage = () => {
     const [SSEConnected, setSSEConnected] = useState(false);
 
     useEffect(() => {
-        const evtSource = new EventSource('https://photos-sse.herokuapp.com/sse.php');
+        const source = new EventSource('https://photos-sse.herokuapp.com/sse.php');
 
-        evtSource.onmessage = function (event) {
+        source.onopen = function () {
             if (!SSEConnected) {
                 setSSEConnected(true);
             }
+        };
+
+        source.addEventListener(
+            'error',
+            function (event: any) {
+                if (event.readyState === EventSource.CLOSED) {
+                    setSSEConnected(false);
+                }
+            },
+            false,
+        );
+
+        source.onmessage = function (event) {
             const photo = JSON.parse(JSON.parse(event.data));
-            console.log(photo);
             dispatch(addImage(photo));
         };
 
         return () => {
-            evtSource.close();
+            source.close();
             dispatch(resetState());
         };
     }, []);
