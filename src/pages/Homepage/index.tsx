@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Typography, Box } from '@mui/material';
 import { FixedSizeGrid as Grid } from 'react-window';
-
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { addImage, resetState } from '../../redux/images';

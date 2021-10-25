@@ -9,7 +9,6 @@ const ImageDetails = () => {
     const [photo, setPhoto] = useState<ImageResponse>();
 
     useEffect(() => {
-        console.log(process.env);
         if (params.id) {
             const fetchPhoto = async (id: string) => {
                 try {
