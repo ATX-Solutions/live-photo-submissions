@@ -2,7 +2,7 @@ interface APIError {
     message: string;
     meta?: {};
 }
-interface Response {
+export interface Response {
     status?: number;
     data?: any;
     errors?: any;

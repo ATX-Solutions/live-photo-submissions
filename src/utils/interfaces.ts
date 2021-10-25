@@ -20,6 +20,7 @@ interface ImageResponseSrc {
     portrait: string;
     landscape: string;
     tiny: string;
+    custom?: string;
 }
 
 // const x = {

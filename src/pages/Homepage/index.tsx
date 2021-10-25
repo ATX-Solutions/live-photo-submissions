@@ -14,14 +14,17 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 // @ts-ignore
 const Row = ({ columnIndex, rowIndex, style }) => {
     const { results } = useAppSelector((state) => state.images);
+
     const index = 3 * rowIndex + columnIndex;
     const photo = results[index];
+
     if (!photo) return null;
+
     return (
         <div style={style}>
             <Box sx={{ m: 2 }}>
                 <Link to={`/images/${photo.id}`}>
-                    <img src={photo.src.tiny} alt={'test'} key={index} />
+                    <img src={photo.src.tiny} alt={photo.photographer} key={index} />
                 </Link>
             </Box>
         </div>
