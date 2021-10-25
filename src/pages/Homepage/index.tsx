@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { Box, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Typography, Box } from '@mui/material';
 import { FixedSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { addImage, resetState } from '../../redux/images';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import Loading from '../../containers/Loading';
 
 // @ts-ignore
 const Row = ({ columnIndex, rowIndex, style }) => {
@@ -24,48 +26,82 @@ const Row = ({ columnIndex, rowIndex, style }) => {
     );
 };
 
+const initEventSource = (setEventsSource: any, setSSEConnected: any, enqueueSnackbar: any, dispatch: any) => {
+    const source = new EventSource(process.env.REACT_APP_EVENT_SOURCE_URL as string);
+    setEventsSource(source);
+
+    source.onopen = function () {
+        setSSEConnected(true);
+        enqueueSnackbar('Succesfully connected to the stream!', {
+            variant: 'success',
+            autoHideDuration: 1000,
+        });
+    };
+
+    source.addEventListener('error', function (event: any) {
+        if (event.readyState === EventSource.CLOSED) {
+            setSSEConnected(false);
+        }
+
+        let error = { data: null, errors: { message: 'Oops! Something happened' } };
+        try {
+            error = JSON.parse(JSON.parse(event.data));
+        } catch (e) {
+            console.error(e);
+        }
+
+        enqueueSnackbar(error.errors.message, {
+            variant: 'error',
+        });
+    });
+
+    source.onmessage = function (event) {
+        const photo = JSON.parse(JSON.parse(event.data));
+        dispatch(addImage(photo));
+    };
+
+    return source;
+};
+
 const Homepage = () => {
     const dispatch = useAppDispatch();
     const { results } = useAppSelector((state) => state.images);
     const [SSEConnected, setSSEConnected] = useState(false);
+    const [eventsSource, setEventsSource] = useState<EventSource | null>(null);
+
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
-        const source = new EventSource('https://photos-sse.herokuapp.com/sse.php');
-
-        source.onopen = function () {
-            if (!SSEConnected) {
-                setSSEConnected(true);
-            }
-        };
-
-        source.addEventListener(
-            'error',
-            function (event: any) {
-                if (event.readyState === EventSource.CLOSED) {
-                    setSSEConnected(false);
-                }
-            },
-            false,
-        );
-
-        source.onmessage = function (event) {
-            const photo = JSON.parse(JSON.parse(event.data));
-            dispatch(addImage(photo));
-        };
+        initEventSource(setEventsSource, setSSEConnected, enqueueSnackbar, dispatch);
 
         return () => {
-            source.close();
+            eventsSource?.close();
             dispatch(resetState());
         };
     }, []);
 
-    return (
-        <div className='App'>
-            <Typography variant='h2' sx={{ textAlign: 'center' }}>
-                {SSEConnected ? "Aaaaannnnnd we're live!!!" : 'Connecting to the live stream...'}
-            </Typography>
+    const toggleConnection = () => {
+        if (eventsSource) {
+            eventsSource?.close();
+            setEventsSource(null);
+            enqueueSnackbar('Succesfully disconnected from the stream!', {
+                variant: 'success',
+                autoHideDuration: 1500,
+            });
+            return;
+        }
+        initEventSource(setEventsSource, setSSEConnected, enqueueSnackbar, dispatch);
+    };
 
-            <Box sx={{ p: 4, height: '80vh', width: '936px', margin: '0 auto' }}>
+    return (
+        <Box>
+            <Loading open={!SSEConnected} />
+
+            <Button onClick={toggleConnection} disabled={eventsSource?.readyState === 0}>
+                {!!eventsSource ? 'Stop' : 'Start'} livestream
+            </Button>
+
+            <Box sx={{ height: '80vh', width: '936px', margin: '0 auto' }}>
                 <AutoSizer>
                     {({ height, width }: { height: number; width: number }) => (
                         <Grid
@@ -81,7 +117,7 @@ const Homepage = () => {
                     )}
                 </AutoSizer>
             </Box>
-        </div>
+        </Box>
     );
 };
 

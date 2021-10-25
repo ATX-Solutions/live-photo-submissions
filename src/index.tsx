@@ -9,13 +9,16 @@ import * as serviceWorker from './serviceWorker';
 
 import './index.scss';
 import { setToken } from './utils/axios';
+import { SnackbarProvider } from 'notistack';
 
 setToken(process.env.REACT_APP_API_TOKEN as string);
 
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
-            <App />
+            <SnackbarProvider maxSnack={5}>
+                <App />
+            </SnackbarProvider>
         </Provider>
     </React.StrictMode>,
     document.getElementById('root'),
