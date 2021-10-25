@@ -16,7 +16,6 @@ export const setToken = (token: string) => {
 export const setInterceptor = (history: RouteComponentProps['history']) => {
     axiosInstance.interceptors.response.use(undefined, function (error) {
         const { status } = error.response;
-        console.log(status);
         switch (status) {
             case 404: {
                 history.push('/404');

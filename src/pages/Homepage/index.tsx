@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
+import Loading from '../../containers/Loading';
+
+import APP_CONSTANTS from '../../utils/constants';
 import { addImage, resetState } from '../../redux/images';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import Loading from '../../containers/Loading';
 
 // @ts-ignore
 const Row = ({ columnIndex, rowIndex, style }) => {
@@ -26,15 +28,13 @@ const Row = ({ columnIndex, rowIndex, style }) => {
     );
 };
 
-const initEventSource = (setEventsSource: any, setSSEConnected: any, enqueueSnackbar: any, dispatch: any) => {
+const initEventSource = (setSSEConnected: any, enqueueSnackbar: any, dispatch: any) => {
     const source = new EventSource(process.env.REACT_APP_EVENT_SOURCE_URL as string);
-    setEventsSource(source);
 
     source.onopen = function () {
         setSSEConnected(true);
-        enqueueSnackbar('Succesfully connected to the stream!', {
+        enqueueSnackbar(APP_CONSTANTS.messages.sseConnectSuccess, {
             variant: 'success',
-            autoHideDuration: 1000,
         });
     };
 
@@ -72,32 +72,32 @@ const Homepage = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
-        initEventSource(setEventsSource, setSSEConnected, enqueueSnackbar, dispatch);
-
+        const source = initEventSource(setSSEConnected, enqueueSnackbar, dispatch);
+        setEventsSource(source);
         return () => {
-            eventsSource?.close();
+            source?.close();
             dispatch(resetState());
         };
     }, []);
 
     const toggleConnection = () => {
         if (eventsSource) {
-            eventsSource?.close();
+            eventsSource.close();
             setEventsSource(null);
-            enqueueSnackbar('Succesfully disconnected from the stream!', {
+            enqueueSnackbar(APP_CONSTANTS.messages.sseConnectSuccess, {
                 variant: 'success',
-                autoHideDuration: 1500,
             });
             return;
         }
-        initEventSource(setEventsSource, setSSEConnected, enqueueSnackbar, dispatch);
+        const source = initEventSource(setSSEConnected, enqueueSnackbar, dispatch);
+        setEventsSource(source);
     };
 
     return (
         <Box>
             <Loading open={!SSEConnected} />
 
-            <Button onClick={toggleConnection} disabled={eventsSource?.readyState === 0}>
+            <Button variant='contained' onClick={toggleConnection} disabled={eventsSource?.readyState === 0}>
                 {!!eventsSource ? 'Stop' : 'Start'} livestream
             </Button>
 

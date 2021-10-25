@@ -1,16 +1,22 @@
+interface APIError {
+    message: string;
+    meta?: {};
+}
 interface Response {
-    status: number;
+    status?: number;
     data?: any;
-    error?: any;
+    errors?: any;
 }
 
-// interface ResponseSuccess extends Response {
+export interface ResponseSuccess extends Response {
+    errors: null;
+    data: any;
+}
 
-// }
-
-// interface ResponseError extends Response {
-
-// }
+export interface ResponseError extends Response {
+    data: null;
+    errors: APIError;
+}
 
 export const mockFetch = (success: boolean = true, response: Response, timeout = 500): Promise<Response> => {
     return new Promise((resolve, reject) => {
