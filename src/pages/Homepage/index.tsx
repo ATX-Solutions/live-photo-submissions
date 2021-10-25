@@ -72,7 +72,7 @@ const Homepage = () => {
                             columnCount={3}
                             columnWidth={280 + 32}
                             height={height}
-                            rowCount={Math.ceil(results.length / 3)}
+                            rowCount={Math.ceil(results.length / 3) + 1}
                             rowHeight={200 + 32}
                             width={width}
                         >
