@@ -3,11 +3,22 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 16px;
     }
 
     .photos {
-        height: 79vh;
+        height: calc(100vh - 64px - 32px - 16px - 36px - 64px);
         width: 100%;
         margin: 0 auto;
+    }
+
+    @media only screen and (max-width: 660px) {
+        .header {
+            display: flex;
+            flex-direction: column;
+            button {
+                margin-top: 16px;
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ const Row = ({ columnIndex, rowIndex, style, data }) => {
 
     return (
         <div style={style}>
-            <Box sx={{ m: 2 }}>
+            <Box sx={{ m: 1 }}>
                 <Link to={`/images/${photo.id}`}>
                     <img src={photo.src.tiny} alt={photo.photographer} key={index} />
                 </Link>
@@ -33,7 +33,7 @@ const Row = ({ columnIndex, rowIndex, style, data }) => {
     );
 };
 
-const initEventSource = (setSSEConnected: any, enqueueSnackbar: any, dispatch: any) => {
+const initEventSource = (setSSEConnected: any, enqueueSnackbar: any, dispatch: any): EventSource => {
     const source = new EventSource(process.env.REACT_APP_EVENT_SOURCE_URL as string);
 
     source.onopen = function () {
@@ -80,7 +80,7 @@ const Homepage = () => {
         const source = initEventSource(setSSEConnected, enqueueSnackbar, dispatch);
         setEventsSource(source);
         return () => {
-            source?.close();
+            eventsSource?.close();
             dispatch(resetState());
         };
     }, []);
@@ -112,10 +112,15 @@ const Homepage = () => {
             <Box className={styles.photos}>
                 <AutoSizer>
                     {({ height, width }: { height: number; width: number }) => {
-                        const photoWidth = 280 + 32;
-                        const photoHeight = 200 + 32;
+                        // 16 (m: 1) = margin of the image box.
+                        let photoWidth = 280 + 16;
+                        if (photoWidth > width) {
+                            photoWidth = width;
+                        }
+                        const photoHeight = 200 + 16;
                         const columnCount = Math.floor(width / photoWidth);
                         const rowCount = Math.ceil(results.length / columnCount);
+
                         return (
                             <Grid
                                 columnCount={columnCount}
