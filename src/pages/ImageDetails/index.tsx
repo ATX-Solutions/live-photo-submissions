@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Skeleton } from '@mui/material';
 
 import Loading from '../../containers/Loading';
 
@@ -9,11 +9,17 @@ import { ImageResponse } from '../../utils/interfaces';
 
 import styles from './ImageDetails.module.scss';
 import { mockFetch, Response } from '../../utils/dev';
+import { useSnackbar } from 'notistack';
+import APP_CONSTANTS from '../../utils/constants';
 
 const ImageDetails = () => {
     const params: { id?: string | undefined } = useParams();
     const [photo, setPhoto] = useState<ImageResponse>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [previewLoading, setPreviewLoading] = useState<boolean>(false);
+    const [previewSize, setPreviewSize] = useState<number>();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (params.id) {
@@ -34,6 +40,7 @@ const ImageDetails = () => {
     }, [params.id]);
 
     const fetchPhotoThumbnail = async (size: number) => {
+        setPreviewSize(size);
         setLoading(true);
         try {
             const mock: Response = {
@@ -48,6 +55,9 @@ const ImageDetails = () => {
             };
             const response = await mockFetch(true, mock);
             setPhoto(response.data);
+            setPreviewLoading(true);
+            navigator.clipboard.writeText(response.data.src.custom);
+            enqueueSnackbar(APP_CONSTANTS.messages.copiedToClipboard, { variant: 'info' });
         } catch (e) {
             console.error(e);
         }
@@ -82,7 +92,25 @@ const ImageDetails = () => {
                     </Button>
                 </Box>
             </Box>
-            <Box>{photo?.src?.custom ? <img src={photo.src.custom} alt={photo.photographer} /> : null}</Box>
+            {previewSize ? (
+                <Box className={styles.previewContainer}>
+                    {previewLoading ? (
+                        <Skeleton
+                            variant='rectangular'
+                            width={previewSize}
+                            height={previewSize}
+                            sx={{ margin: '0 auto' }}
+                        />
+                    ) : null}
+                    {loading ? null : (
+                        <img
+                            src={photo?.src?.custom}
+                            alt={photo?.photographer || ''}
+                            onLoad={() => setPreviewLoading(false)}
+                        />
+                    )}
+                </Box>
+            ) : null}
         </Box>
     );
 };

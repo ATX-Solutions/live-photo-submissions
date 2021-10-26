@@ -4,6 +4,8 @@ interface AppConstants {
     messages: {
         sseConnectSuccess: string;
         sseConnectFailure: string;
+        sseDisconnect: string;
+        copiedToClipboard: string;
     };
     defaultValues: {
         sseError: ResponseError;
@@ -15,8 +17,10 @@ interface AppConstants {
 
 const APP_CONSTANTS: AppConstants = {
     messages: {
-        sseConnectSuccess: 'Succesfully connected to the stream!',
-        sseConnectFailure: 'Oops! Something happened',
+        sseConnectSuccess: 'Succesfully connected to the stream! 🎉',
+        sseDisconnect: 'Succesfully disconnected from the stream! 🎉',
+        sseConnectFailure: 'Oops! Something happened. 😢',
+        copiedToClipboard: 'Image source was copied to clipboard! 📋',
     },
     defaultValues: {
         sseError: { data: null, errors: { message: 'Oops! Something happened' } },

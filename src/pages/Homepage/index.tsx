@@ -87,8 +87,8 @@ const Homepage = () => {
         if (eventsSource) {
             eventsSource.close();
             setEventsSource(null);
-            enqueueSnackbar(APP_CONSTANTS.messages.sseConnectSuccess, {
-                variant: 'success',
+            enqueueSnackbar(APP_CONSTANTS.messages.sseDisconnect, {
+                variant: 'info',
             });
             return;
         }
