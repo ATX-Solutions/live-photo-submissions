@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -11,11 +11,13 @@ import APP_CONSTANTS from '../../utils/constants';
 import { addImage, resetState } from '../../redux/images';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
-// @ts-ignore
-const Row = ({ columnIndex, rowIndex, style }) => {
-    const { results } = useAppSelector((state) => state.images);
+import styles from './Homepage.module.scss';
 
-    const index = 3 * rowIndex + columnIndex;
+// @ts-ignore
+const Row = ({ columnIndex, rowIndex, style, data }) => {
+    const { results, columnCount } = data;
+
+    const index = columnIndex + rowIndex * columnCount;
     const photo = results[index];
 
     if (!photo) return null;
@@ -97,27 +99,37 @@ const Homepage = () => {
     };
 
     return (
-        <Box>
+        <Box className={styles.container}>
             <Loading open={!SSEConnected} />
 
-            <Button variant='contained' onClick={toggleConnection} disabled={eventsSource?.readyState === 0}>
-                {!!eventsSource ? 'Stop' : 'Start'} livestream
-            </Button>
+            <Box className={styles.header}>
+                <Typography variant='body1'>Once a photo gets uploaded, you will see it below.</Typography>
+                <Button variant='contained' onClick={toggleConnection} disabled={eventsSource?.readyState === 0}>
+                    {!!eventsSource ? 'Stop' : 'Start'} livestream
+                </Button>
+            </Box>
 
-            <Box sx={{ height: '80vh', width: '936px', margin: '0 auto' }}>
+            <Box className={styles.photos}>
                 <AutoSizer>
-                    {({ height, width }: { height: number; width: number }) => (
-                        <Grid
-                            columnCount={3}
-                            columnWidth={280 + 32}
-                            height={height}
-                            rowCount={Math.ceil(results.length / 3) + 1}
-                            rowHeight={200 + 32}
-                            width={width}
-                        >
-                            {Row}
-                        </Grid>
-                    )}
+                    {({ height, width }: { height: number; width: number }) => {
+                        const photoWidth = 280 + 32;
+                        const photoHeight = 200 + 32;
+                        const columnCount = Math.floor(width / photoWidth);
+                        const rowCount = Math.ceil(results.length / columnCount);
+                        return (
+                            <Grid
+                                columnCount={columnCount}
+                                columnWidth={photoWidth}
+                                rowHeight={photoHeight}
+                                rowCount={rowCount}
+                                width={width}
+                                height={height}
+                                itemData={{ results, columnCount }}
+                            >
+                                {Row}
+                            </Grid>
+                        );
+                    }}
                 </AutoSizer>
             </Box>
         </Box>

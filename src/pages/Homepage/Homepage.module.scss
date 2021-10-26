@@ -1,0 +1,13 @@
+.container {
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .photos {
+        height: 79vh;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
