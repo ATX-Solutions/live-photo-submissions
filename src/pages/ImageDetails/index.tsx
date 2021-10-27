@@ -1,7 +1,7 @@
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { Box, Button, Typography, Skeleton } from '@mui/material';
+import { Box, Button, Typography, Skeleton, FormControlLabel, Switch } from '@mui/material';
 
 import Loading from '../../containers/Loading';
 
@@ -18,6 +18,7 @@ const ImageDetails = () => {
     const [photo, setPhoto] = useState<ImageResponse>();
     const [loading, setLoading] = useState<boolean>(false);
     const [previewLoading, setPreviewLoading] = useState<boolean>(false);
+    const [openInNewTab, setOpenInNewTab] = useState<boolean>(true);
     const [previewSize, setPreviewSize] = useState<number>();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -45,7 +46,6 @@ const ImageDetails = () => {
     }, [params.id]);
 
     const fetchPhotoThumbnail = async (size: number) => {
-        setPreviewSize(size);
         setLoading(true);
         try {
             const mock: Response = {
@@ -60,9 +60,20 @@ const ImageDetails = () => {
             };
             const response = await mockFetch(true, mock);
             setPhoto(response.data);
-            setPreviewLoading(true);
-            navigator.clipboard.writeText(response.data.src.custom);
+
+            try {
+                await navigator.clipboard.writeText(response.data.src.custom);
+            } catch (err) {
+                console.error('copy clipboard error', err);
+            }
+
             enqueueSnackbar(APP_CONSTANTS.messages.copiedToClipboard, { variant: 'info' });
+
+            if (openInNewTab) {
+                window.open(response.data.src.custom);
+            } else {
+                setPreviewSize(size);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -88,37 +99,51 @@ const ImageDetails = () => {
     return (
         <Box className={styles.wrapper}>
             <Loading open={loading} />
-            <Box className={styles.header}>
-                <Button variant='contained' onClick={() => fetchAnotherPhoto(false)}>
-                    Prev
-                </Button>
-                <Typography variant='h5'>Image details {params.id}</Typography>
-                <Button variant='contained' onClick={() => fetchAnotherPhoto()}>
-                    Next
-                </Button>
-            </Box>
-            <Box className={styles.imageContainer}>
-                {photo ? <img src={photo.src.medium} alt={photo.photographer} /> : null}
-            </Box>
-            <Box>
-                <Typography variant='h5'>Get different sizes</Typography>
-                <Box className={styles.actionsContainer}>
-                    <Button variant='contained' onClick={() => fetchPhotoThumbnail(48)}>
-                        48px
-                    </Button>
-                    <Button variant='contained' onClick={() => fetchPhotoThumbnail(400)}>
-                        400px
-                    </Button>
-                    <Button variant='contained' onClick={() => fetchPhotoThumbnail(800)}>
-                        800px
-                    </Button>
-                    <Button variant='contained' onClick={() => fetchPhotoThumbnail(1280)}>
-                        1280px
-                    </Button>
+            <Box className={styles.container}>
+                <Box className={styles.left}>
+                    {photo ? (
+                        <img src={photo.src.medium} alt={photo.photographer} />
+                    ) : (
+                        <Skeleton variant='rectangular' width={525} height={350} />
+                    )}
                 </Box>
+                {photo ? (
+                    <Box className={styles.right}>
+                        <Typography variant='h5'>{photo.photographer}</Typography>
+                        <Typography variant='body1'>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur quis sem at neque
+                            condimentum tempus. Maecenas non ornare diam. Proin sollicitudin dapibus diam, id ultricies
+                            dui vehicula vitae. Proin efficitur, ipsum eget interdum egestas, tortor quam commodo
+                            lectus, et semper neque arcu at tellus. Integer malesuada velit vitae fermentum rhoncus.
+                        </Typography>
+                        <Box>
+                            <FormControlLabel
+                                control={<Switch checked={openInNewTab} />}
+                                label='Open in new tab'
+                                onChange={() => setOpenInNewTab(!openInNewTab)}
+                            />
+                            <Typography variant='body2'>
+                                You can choose if you want the buttons below to open the image in a new tab or to load
+                                it below. Some resolutions might now be loaded completely on your screen.
+                            </Typography>
+                        </Box>
+                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(48)}>
+                            48px
+                        </Button>
+                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(400)}>
+                            400px
+                        </Button>
+                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(800)}>
+                            800px
+                        </Button>
+                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(1280)}>
+                            1280px
+                        </Button>
+                    </Box>
+                ) : null}
             </Box>
-            {previewSize ? (
-                <Box className={styles.previewContainer}>
+            {!openInNewTab && photo?.src?.custom ? (
+                <Box className={styles.preview}>
                     {previewLoading ? (
                         <Skeleton
                             variant='rectangular'
@@ -127,13 +152,11 @@ const ImageDetails = () => {
                             sx={{ margin: '0 auto' }}
                         />
                     ) : null}
-                    {loading ? null : (
-                        <img
-                            src={photo?.src?.custom}
-                            alt={photo?.photographer || ''}
-                            onLoad={() => setPreviewLoading(false)}
-                        />
-                    )}
+                    <img
+                        src={photo.src.custom}
+                        alt={photo.photographer || ''}
+                        onLoad={() => setPreviewLoading(false)}
+                    />
                 </Box>
             ) : null}
         </Box>

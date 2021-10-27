@@ -10,15 +10,27 @@ import { setToken } from './utils/axios';
 import APP_CONSTANTS from './utils/constants';
 
 import './index.scss';
+import { ThemeProvider } from '@mui/material';
+import theme from './utils/theme';
 
 setToken(process.env.REACT_APP_API_TOKEN as string);
 
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
-            <SnackbarProvider maxSnack={5} autoHideDuration={APP_CONSTANTS.notifications.autoHideDuration}>
-                <App />
-            </SnackbarProvider>
+            <ThemeProvider theme={theme}>
+                <SnackbarProvider
+                    maxSnack={5}
+                    autoHideDuration={APP_CONSTANTS.notifications.autoHideDuration}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    hideIconVariant
+                >
+                    <App />
+                </SnackbarProvider>
+            </ThemeProvider>
         </Provider>
     </React.StrictMode>,
     document.getElementById('root'),
