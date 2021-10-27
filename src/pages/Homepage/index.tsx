@@ -72,7 +72,7 @@ const Homepage = () => {
     const dispatch = useAppDispatch();
     const { results } = useAppSelector((state) => state.images);
     const [SSEConnected, setSSEConnected] = useState(false);
-    const [eventsSource, setEventsSource] = useState<EventSource | null>(null);
+    const [eventsSource, setEventsSource] = useState<EventSource>();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -80,15 +80,20 @@ const Homepage = () => {
         const source = initEventSource(setSSEConnected, enqueueSnackbar, dispatch);
         setEventsSource(source);
         return () => {
-            eventsSource?.close();
             dispatch(resetState());
         };
     }, []);
 
+    useEffect(() => {
+        return () => {
+            eventsSource?.close();
+        };
+    }, [eventsSource]);
+
     const toggleConnection = () => {
         if (eventsSource) {
             eventsSource.close();
-            setEventsSource(null);
+            setEventsSource(undefined);
             enqueueSnackbar(APP_CONSTANTS.messages.sseDisconnect, {
                 variant: 'info',
             });

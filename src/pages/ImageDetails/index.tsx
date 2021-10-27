@@ -1,18 +1,19 @@
-import { useParams } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router';
 import { Box, Button, Typography, Skeleton } from '@mui/material';
 
 import Loading from '../../containers/Loading';
 
 import axiosInstance from '../../utils/axios';
+import APP_CONSTANTS from '../../utils/constants';
+import { mockFetch, Response } from '../../utils/dev';
 import { ImageResponse } from '../../utils/interfaces';
 
 import styles from './ImageDetails.module.scss';
-import { mockFetch, Response } from '../../utils/dev';
-import { useSnackbar } from 'notistack';
-import APP_CONSTANTS from '../../utils/constants';
 
 const ImageDetails = () => {
+    const history = useHistory();
     const params: { id?: string | undefined } = useParams();
     const [photo, setPhoto] = useState<ImageResponse>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -37,6 +38,10 @@ const ImageDetails = () => {
 
             fetchPhoto(params.id);
         }
+        return () => {
+            setPreviewLoading(false);
+            setPreviewSize(undefined);
+        };
     }, [params.id]);
 
     const fetchPhotoThumbnail = async (size: number) => {
@@ -64,13 +69,33 @@ const ImageDetails = () => {
         setLoading(false);
     };
 
+    const fetchAnotherPhoto = async (next = true) => {
+        try {
+            const mockResponse: Response = {
+                status: 200,
+                data: {
+                    nextId: Number(params.id) === 3408744 ? 572897 : 3408744,
+                    prevId: Number(params.id) === 572897 ? 3408744 : 572897,
+                },
+            };
+            const response = await mockFetch(true, mockResponse);
+            history.push(`/images/${next ? response.data.nextId : response.data.prevId}`);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     return (
         <Box className={styles.wrapper}>
             <Loading open={loading} />
             <Box className={styles.header}>
-                <Button variant='contained'>Prev</Button>
+                <Button variant='contained' onClick={() => fetchAnotherPhoto(false)}>
+                    Prev
+                </Button>
                 <Typography variant='h5'>Image details {params.id}</Typography>
-                <Button variant='contained'>Next</Button>
+                <Button variant='contained' onClick={() => fetchAnotherPhoto()}>
+                    Next
+                </Button>
             </Box>
             <Box className={styles.imageContainer}>
                 {photo ? <img src={photo.src.medium} alt={photo.photographer} /> : null}
