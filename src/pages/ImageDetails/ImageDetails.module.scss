@@ -4,11 +4,11 @@
         align-items: center;
 
         .left {
-            flex: 0.55;
+            width: 50%;
         }
 
         .right {
-            flex: 0.5;
+            width: 50%;
             h5 {
                 margin-bottom: 16px;
             }
@@ -40,13 +40,32 @@
 
             .left {
                 margin-bottom: 16px;
+                width: 100%;
+                display: flex;
+                justify-content: center;
             }
 
             .right {
+                width: 100%;
+
                 .buttons {
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: 400px) {
+        .container {
+            .right {
+                .buttons {
+                    display: block;
+                    margin: 0 -16px;
+                    button {
+                        margin: 8px;
+                    }
                 }
             }
         }
