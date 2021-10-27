@@ -14,14 +14,12 @@ import styles from './ImageDetails.module.scss';
 
 const ImageDetails = () => {
     const history = useHistory();
+    const { enqueueSnackbar } = useSnackbar();
     const params: { id?: string | undefined } = useParams();
+
     const [photo, setPhoto] = useState<ImageResponse>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [previewLoading, setPreviewLoading] = useState<boolean>(false);
     const [openInNewTab, setOpenInNewTab] = useState<boolean>(true);
-    const [previewSize, setPreviewSize] = useState<number>();
-
-    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (params.id) {
@@ -39,14 +37,11 @@ const ImageDetails = () => {
 
             fetchPhoto(params.id);
         }
-        return () => {
-            setPreviewLoading(false);
-            setPreviewSize(undefined);
-        };
     }, [params.id]);
 
     const fetchPhotoThumbnail = async (size: number) => {
         setLoading(true);
+
         try {
             const mock: Response = {
                 status: 200,
@@ -71,8 +66,6 @@ const ImageDetails = () => {
 
             if (openInNewTab) {
                 window.open(response.data.src.custom);
-            } else {
-                setPreviewSize(size);
             }
         } catch (e) {
             console.error(e);
@@ -127,36 +120,26 @@ const ImageDetails = () => {
                                 it below. Some resolutions might now be loaded completely on your screen.
                             </Typography>
                         </Box>
-                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(48)}>
-                            48px
-                        </Button>
-                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(400)}>
-                            400px
-                        </Button>
-                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(800)}>
-                            800px
-                        </Button>
-                        <Button variant='contained' onClick={() => fetchPhotoThumbnail(1280)}>
-                            1280px
-                        </Button>
+                        <Box className={styles.buttons}>
+                            <Button variant='contained' onClick={() => fetchPhotoThumbnail(48)}>
+                                48px
+                            </Button>
+                            <Button variant='contained' onClick={() => fetchPhotoThumbnail(400)}>
+                                400px
+                            </Button>
+                            <Button variant='contained' onClick={() => fetchPhotoThumbnail(800)}>
+                                800px
+                            </Button>
+                            <Button variant='contained' onClick={() => fetchPhotoThumbnail(1280)}>
+                                1280px
+                            </Button>
+                        </Box>
                     </Box>
                 ) : null}
             </Box>
             {!openInNewTab && photo?.src?.custom ? (
                 <Box className={styles.preview}>
-                    {previewLoading ? (
-                        <Skeleton
-                            variant='rectangular'
-                            width={previewSize}
-                            height={previewSize}
-                            sx={{ margin: '0 auto' }}
-                        />
-                    ) : null}
-                    <img
-                        src={photo.src.custom}
-                        alt={photo.photographer || ''}
-                        onLoad={() => setPreviewLoading(false)}
-                    />
+                    <img src={photo.src.custom} alt={photo.photographer || ''} />
                 </Box>
             ) : null}
         </Box>
