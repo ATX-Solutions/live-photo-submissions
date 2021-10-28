@@ -23,8 +23,8 @@ ReactDOM.render(
                     maxSnack={5}
                     autoHideDuration={APP_CONSTANTS.notifications.autoHideDuration}
                     anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
+                        vertical: 'bottom',
+                        horizontal: 'center',
                     }}
                     hideIconVariant
                 >
