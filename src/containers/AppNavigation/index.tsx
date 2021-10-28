@@ -15,7 +15,7 @@ const AppNavigation = () => {
     return (
         <AppBar position='static' className={styles.wrapper}>
             <Toolbar>
-                <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+                <Typography variant='h6' component='div' className={styles.appTitle}>
                     <NavLink to={'/'}>Photos</NavLink>
                 </Typography>
                 <Button color='inherit' component={NavLink} to='/'>

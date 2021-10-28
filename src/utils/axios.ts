@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
 
 const axiosInstance = axios.create({
@@ -14,13 +14,27 @@ export const setToken = (token: string) => {
 // };
 
 export const setInterceptor = (history: RouteComponentProps['history']) => {
-    axiosInstance.interceptors.response.use(undefined, function (error) {
-        const { status } = error.response;
-        switch (status) {
-            case 404: {
-                history.push('/404');
+    axiosInstance.interceptors.response.use(undefined, function (error: Error | AxiosError) {
+        if (axios.isAxiosError(error) && error.response) {
+            const { status } = error.response;
+            switch (status) {
+                case 404: {
+                    history.push('/404');
+                    break;
+                }
+                case 500: {
+                    // snackbar
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
+        } else {
+            // snackbar
+            // network error
         }
+
         return Promise.reject(error);
     });
 };

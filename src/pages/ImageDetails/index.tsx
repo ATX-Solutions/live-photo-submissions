@@ -17,9 +17,11 @@ const ImageDetails = () => {
     const { enqueueSnackbar } = useSnackbar();
     const params: { id?: string | undefined } = useParams();
 
+    const [size, setSize] = useState<number>();
     const [photo, setPhoto] = useState<ImageResponse>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [openInNewTab, setOpenInNewTab] = useState<boolean>(true);
+    const [previewLoading, setPreviewLoading] = useState<boolean>();
+    const [openInNewTab, setOpenInNewTab] = useState<boolean>(false);
 
     useEffect(() => {
         if (params.id) {
@@ -37,10 +39,15 @@ const ImageDetails = () => {
 
             fetchPhoto(params.id);
         }
+        return () => {
+            setSize(undefined);
+            setPreviewLoading(undefined);
+        };
     }, [params.id]);
 
     const fetchPhotoThumbnail = async (size: number) => {
         setLoading(true);
+        setSize(size);
 
         try {
             const mock: Response = {
@@ -53,7 +60,7 @@ const ImageDetails = () => {
                     },
                 } as ImageResponse,
             };
-            const response = await mockFetch(true, mock);
+            const response = await mockFetch(`/photos/${photo?.id}?w=${size}`, true, mock);
             setPhoto(response.data);
 
             try {
@@ -66,6 +73,8 @@ const ImageDetails = () => {
 
             if (openInNewTab) {
                 window.open(response.data.src.custom);
+            } else {
+                setPreviewLoading(true);
             }
         } catch (e) {
             console.error(e);
@@ -73,25 +82,21 @@ const ImageDetails = () => {
         setLoading(false);
     };
 
-    const fetchAnotherPhoto = async (next = true) => {
-        try {
-            const mockResponse: Response = {
-                status: 200,
-                data: {
-                    nextId: Number(params.id) === 3408744 ? 572897 : 3408744,
-                    prevId: Number(params.id) === 572897 ? 3408744 : 572897,
-                },
-            };
-            const response = await mockFetch(true, mockResponse);
-            history.push(`/images/${next ? response.data.nextId : response.data.prevId}`);
-        } catch (e) {
-            console.error(e);
-        }
+    const fetchAnotherPhoto = (next = true) => {
+        history.push(`/images/${next ? photo?.nextId : photo?.prevId}`);
     };
 
     return (
         <Box className={styles.wrapper}>
             <Loading open={loading} />
+            <Box className={styles.header}>
+                <Button variant='contained' onClick={() => fetchAnotherPhoto(false)} disabled={!photo?.prevId}>
+                    Previous
+                </Button>
+                <Button variant='contained' onClick={() => fetchAnotherPhoto()} disabled={!photo?.nextId}>
+                    Next
+                </Button>
+            </Box>
             <Box className={styles.container}>
                 <Box className={styles.left}>
                     {photo ? (
@@ -137,9 +142,18 @@ const ImageDetails = () => {
                     </Box>
                 ) : null}
             </Box>
-            {!openInNewTab && photo?.src?.custom ? (
+            {!openInNewTab && size ? (
                 <Box className={styles.preview}>
-                    <img src={photo.src.custom} alt={photo.photographer || ''} />
+                    {previewLoading ? (
+                        <Skeleton className={styles.skeleton} variant='rectangular' width={size} height={size} />
+                    ) : null}
+                    {loading ? null : (
+                        <img
+                            src={photo?.src?.custom}
+                            alt={photo?.photographer || ''}
+                            onLoad={() => setPreviewLoading(false)}
+                        />
+                    )}
                 </Box>
             ) : null}
         </Box>

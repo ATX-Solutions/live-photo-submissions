@@ -1,4 +1,17 @@
 .wrapper {
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+
+        button {
+            &:first-of-type {
+                margin-right: 16px;
+            }
+        }
+    }
+
     .container {
         display: flex;
         align-items: center;
@@ -34,6 +47,10 @@
         margin-top: 32px;
         img {
             max-width: 80%;
+        }
+        .skeleton {
+            max-width: 80%;
+            margin: 0 auto;
         }
     }
 

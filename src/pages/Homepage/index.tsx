@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { MasonryInfiniteGrid } from '@egjs/react-infinitegrid';
+import { JustifiedInfiniteGrid } from '@egjs/react-infinitegrid';
 
 import Loading from '../../containers/Loading';
 
@@ -93,7 +93,7 @@ const Homepage = () => {
                 </Button>
             </Box>
 
-            <MasonryInfiniteGrid className={styles.photos} align='justify' gap={5}>
+            <JustifiedInfiniteGrid className={styles.photos} align='justify' gap={5}>
                 {results.map((photo, index) => {
                     return (
                         <div className={styles.item} data-grid-groupkey={photo.groupKey} key={index}>
@@ -105,7 +105,7 @@ const Homepage = () => {
                         </div>
                     );
                 })}
-            </MasonryInfiniteGrid>
+            </JustifiedInfiniteGrid>
         </Box>
     );
 };

@@ -1,17 +1,6 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import { mockFetch } from '../utils/dev';
 import { ImageResponse } from '../utils/interfaces';
-
-export const refreshImages = createAsyncThunk('/refreshImages', async (values: any, { rejectWithValue }) => {
-    console.log(values);
-    try {
-        const response = await mockFetch(true, { data: [], status: 200 });
-        return response.data;
-    } catch (e) {
-        // return errorHandler(e, rejectWithValue);
-    }
-});
 
 const initialState: { results: ImageResponse[]; loading: boolean } = {
     results: [],
@@ -24,8 +13,12 @@ const images = createSlice({
     reducers: {
         resetState: () => initialState,
         addImage: (state, { payload }) => {
-            // state.results.unshift(payload);
-            state.results = [payload, ...state.results].map((p, index) => ({ ...p, groupKey: Math.floor(index / 10) }));
+            state.results = [payload, ...state.results].map((p, index) => ({
+                ...p,
+                nextId: 3408744,
+                prevId: 572897,
+                groupKey: Math.floor(index / 10),
+            }));
         },
     },
     extraReducers: () => {},

@@ -18,7 +18,12 @@ export interface ResponseError extends Response {
     errors: APIError;
 }
 
-export const mockFetch = (success: boolean = true, response: Response, timeout = 500): Promise<Response> => {
+export const mockFetch = (
+    url: string,
+    success: boolean = true,
+    response: Response,
+    timeout = 500,
+): Promise<Response> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             if (success) {

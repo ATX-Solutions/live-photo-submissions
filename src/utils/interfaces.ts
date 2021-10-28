@@ -10,6 +10,8 @@ export interface ImageResponse {
     src: ImageResponseSrc;
     liked: boolean;
     groupKey?: number;
+    nextId?: number;
+    prevId?: number;
 }
 
 interface ImageResponseSrc {
