@@ -2,15 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
+import { ThemeProvider } from '@mui/material';
 
 import App from './containers/App';
 
 import { store } from './redux/store';
 import { setToken } from './utils/axios';
 import APP_CONSTANTS from './utils/constants';
+import { SnackbarUtilsConfigurator } from './utils/snackbar';
 
 import './index.scss';
-import { ThemeProvider } from '@mui/material';
 import theme from './utils/theme';
 
 setToken(process.env.REACT_APP_API_TOKEN as string);
@@ -28,6 +29,7 @@ ReactDOM.render(
                     }}
                     hideIconVariant
                 >
+                    <SnackbarUtilsConfigurator />
                     <App />
                 </SnackbarProvider>
             </ThemeProvider>

@@ -1,5 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
+import APP_CONSTANTS from './constants';
+
+import SnackbarUtils from './snackbar';
 
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
@@ -16,6 +19,12 @@ export const setToken = (token: string) => {
 export const setInterceptor = (history: RouteComponentProps['history']) => {
     axiosInstance.interceptors.response.use(undefined, function (error: Error | AxiosError) {
         if (axios.isAxiosError(error) && error.response) {
+            // mock to simulate 500
+            if (error.config.url === '/randomString') {
+                SnackbarUtils.error(APP_CONSTANTS.messages.serverError);
+                return Promise.reject(error);
+            }
+
             const { status } = error.response;
             switch (status) {
                 case 404: {
@@ -23,7 +32,7 @@ export const setInterceptor = (history: RouteComponentProps['history']) => {
                     break;
                 }
                 case 500: {
-                    // snackbar
+                    SnackbarUtils.error(APP_CONSTANTS.messages.serverError);
                     break;
                 }
                 default: {
@@ -31,8 +40,8 @@ export const setInterceptor = (history: RouteComponentProps['history']) => {
                 }
             }
         } else {
-            // snackbar
             // network error
+            SnackbarUtils.error(APP_CONSTANTS.messages.serverError);
         }
 
         return Promise.reject(error);

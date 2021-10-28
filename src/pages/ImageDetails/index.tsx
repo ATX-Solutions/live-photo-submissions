@@ -28,7 +28,12 @@ const ImageDetails = () => {
             const fetchPhoto = async (id: string) => {
                 try {
                     const response = await axiosInstance.get<ImageResponse>(`/${id}`);
-                    setPhoto(response.data);
+                    const p: ImageResponse = {
+                        ...response.data,
+                        nextId: Number(params.id) === 3408744 ? 572897 : 3408744,
+                        prevId: Number(params.id) === 572897 ? 3408744 : 572897,
+                    };
+                    setPhoto(p);
                 } catch (e) {
                     console.log(e);
                 }

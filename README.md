@@ -1,28 +1,27 @@
-## Todos:
+# Todos:
 
-1. Fix grid behaviour on error
-2. Handle errors globally (snackbar).
-3. Write README
-4. Archive page filters
+1. Review README
+2. Archive page filters
+3. Review SSE.
 
 # Screens
 
 ## Homepage
 
-In the homepage the user is able to track what pictures are uploaded on the server. Once the picture is uploaded, the server will dispatch an event containing that picture.
+In the homepage the user is able to track what images are uploaded on the server. Once the image is uploaded, the server will dispatch an event containing that image (`ImageResponse` interface).
 
 ## Archive
 
-The `Homepage` screen is great to follow the live stream of pictures, but I think we need a place to explore "old" pictures as well. This is why I added this page. Here, the user can see all the pictures uploaded in certain day. He can filter the content by day.
+The `Homepage` screen is great to follow the live stream of images, but I think we need a place to explore "old" images as well. This is why I added this page. Here, the user can see all the images uploaded in certain day. He can filter the content by day.
 
 ## Image details
 
-The user can click on any picture (in both `Homepage` & `Archive` screens) and he will be redirected to the `Image details` screen. Here he can see the picture alongside other details (maybe that meta information at some point).
-Besides this he can request the picture in different sizes (as requested in the brief). Here I added the option to display the request size of the picture either in the same page (rendered below) or in a new tab. This option can be selected via the switch component.
+The user can click on any image (in both `Homepage` & `Archive` screens) and he will be redirected to the `Image details` screen. Here he can see the image alongside other details (maybe that meta information at some point).
+Besides this he can request the image in different sizes (as requested in the brief). Here I added the option to display the request size of the image either in the same page (rendered below) or in a new tab. This option can be selected via the switch component.
 
 # Real time solution
 
-In the brief I received there was mention of "real time / close to real time". In order to achieve this behaviour I chose to use `Server Sent Events` since they are natively supported by all browsers (expect IE). SSE approach is very useful when the client is **not required** to comuniate with the server as well. In this particular case, since the client has to display all the pictures in real time from the server, I decided to go with this approach.
+In the brief I received there was mention of "real time / close to real time". In order to achieve this behaviour I chose to use `Server Sent Events` since they are natively supported by all browsers (expect IE). SSE approach is very useful when the client is **not required** to comuniate with the server as well. In this particular case, since the client has to display all the images in real time from the server, I decided to go with this approach.
 
 Alternatives out there:
 
@@ -63,3 +62,13 @@ The core should expose an endpoint such `/photos/:id` that accepts query params 
 -   `?w=VALUE` width
 -   `?h=VALUE` height
 -   even more options can be passed depending on the use case (example: aspect ratio enabled/disabled)
+
+# Mocks
+
+I used the https://www.pexels.com/ API to store locally 80 images. https://github.com/ATX-Solutions/photos
+
+In order to show the SSE approach I created a repo with the SSE implementation in php. https://github.com/ATX-Solutions/photos-sse
+
+The SSE implementation is quite simple. It randomnly selects an image from those 80 images. Once in a 10 events, it also sends an error response (`APIError` interface).
+
+There is also a function defined in the frontend repo `mockFetch` to mock a request to the `Core API`. Since the pexels API provided the `/photo/:id` endpoinnt I decided to use that one instead of a mocked endpoint in order save some time. The `mockFetch` function is used only for the endpoint `/photo/:id?w=VALUE`.

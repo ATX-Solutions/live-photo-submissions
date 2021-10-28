@@ -15,8 +15,6 @@ const images = createSlice({
         addImage: (state, { payload }) => {
             state.results = [payload, ...state.results].map((p, index) => ({
                 ...p,
-                nextId: 3408744,
-                prevId: 572897,
                 groupKey: Math.floor(index / 10),
             }));
         },

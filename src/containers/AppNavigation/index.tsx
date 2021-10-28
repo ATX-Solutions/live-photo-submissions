@@ -1,17 +1,27 @@
 import { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 
-import { setInterceptor } from '../../utils/axios';
+import axiosInstance, { setInterceptor } from '../../utils/axios';
 
 import styles from './AppNavigation.module.scss';
 
 const AppNavigation = () => {
     const history = useHistory();
+
     useEffect(() => {
         setInterceptor(history);
     }, []);
+
+    const simulateServerError = async () => {
+        try {
+            await axiosInstance.get('/randomString');
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     return (
         <AppBar position='static' className={styles.wrapper}>
             <Toolbar>
@@ -24,8 +34,8 @@ const AppNavigation = () => {
                 <Button color='inherit' component={NavLink} to='/archive'>
                     Archive
                 </Button>
-                <Button color='inherit' component={NavLink} to='/about'>
-                    About
+                <Button color='error' onClick={simulateServerError}>
+                    Server Error
                 </Button>
             </Toolbar>
         </AppBar>

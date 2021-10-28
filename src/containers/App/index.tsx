@@ -1,7 +1,6 @@
 import { Paper } from '@mui/material';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import About from '../../pages/About';
 import Archive from '../../pages/Archive';
 import Homepage from '../../pages/Homepage';
 import NotFound from '../../pages/NotFound';
@@ -16,7 +15,6 @@ const App = () => {
             <Paper sx={{ p: 4, m: 2 }} elevation={6}>
                 <Switch>
                     <Route path='/' exact component={Homepage} />
-                    <Route path='/about' exact component={About} />
                     <Route path='/archive' exact component={Archive} />
                     <Route path='/images/:id' exact component={ImageDetails} />
                     <Route path='*' component={NotFound} />
