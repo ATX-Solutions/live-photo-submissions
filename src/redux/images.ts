@@ -24,7 +24,8 @@ const images = createSlice({
     reducers: {
         resetState: () => initialState,
         addImage: (state, { payload }) => {
-            state.results.unshift(payload);
+            // state.results.unshift(payload);
+            state.results = [payload, ...state.results].map((p, index) => ({ ...p, groupKey: Math.floor(index / 10) }));
         },
     },
     extraReducers: () => {},

@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { Box, Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { FixedSizeGrid as Grid } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { Box, Button, Typography } from '@mui/material';
+import { MasonryInfiniteGrid } from '@egjs/react-infinitegrid';
 
 import Loading from '../../containers/Loading';
 
@@ -12,26 +11,6 @@ import { addImage, resetState } from '../../redux/images';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
 import styles from './Homepage.module.scss';
-
-// @ts-ignore
-const Row = ({ columnIndex, rowIndex, style, data }) => {
-    const { results, columnCount } = data;
-
-    const index = columnIndex + rowIndex * columnCount;
-    const photo = results[index];
-
-    if (!photo) return null;
-
-    return (
-        <div style={style}>
-            <Box sx={{ m: 1 }}>
-                <Link to={`/images/${photo.id}`}>
-                    <img src={photo.src.tiny} alt={photo.photographer} key={index} />
-                </Link>
-            </Box>
-        </div>
-    );
-};
 
 const initEventSource = (setSSEConnected: any, enqueueSnackbar: any, dispatch: any): EventSource => {
     const source = new EventSource(process.env.REACT_APP_EVENT_SOURCE_URL as string);
@@ -70,11 +49,11 @@ const initEventSource = (setSSEConnected: any, enqueueSnackbar: any, dispatch: a
 
 const Homepage = () => {
     const dispatch = useAppDispatch();
-    const { results } = useAppSelector((state) => state.images);
-    const [SSEConnected, setSSEConnected] = useState(false);
-    const [eventsSource, setEventsSource] = useState<EventSource>();
-
     const { enqueueSnackbar } = useSnackbar();
+    const { results } = useAppSelector((state) => state.images);
+
+    const [SSEConnected, setSSEConnected] = useState<boolean>(false);
+    const [eventsSource, setEventsSource] = useState<EventSource>();
 
     useEffect(() => {
         const source = initEventSource(setSSEConnected, enqueueSnackbar, dispatch);
@@ -114,34 +93,19 @@ const Homepage = () => {
                 </Button>
             </Box>
 
-            <Box className={styles.photos}>
-                <AutoSizer>
-                    {({ height, width }: { height: number; width: number }) => {
-                        // 16 (m: 1) = margin of the image box.
-                        let photoWidth = 280 + 16;
-                        if (photoWidth > width) {
-                            photoWidth = width;
-                        }
-                        const photoHeight = 200 + 16;
-                        const columnCount = Math.floor(width / photoWidth);
-                        const rowCount = Math.ceil(results.length / columnCount);
-
-                        return (
-                            <Grid
-                                columnCount={columnCount}
-                                columnWidth={photoWidth}
-                                rowHeight={photoHeight}
-                                rowCount={rowCount}
-                                width={width}
-                                height={height}
-                                itemData={{ results, columnCount }}
-                            >
-                                {Row}
-                            </Grid>
-                        );
-                    }}
-                </AutoSizer>
-            </Box>
+            <MasonryInfiniteGrid className={styles.photos} align='justify' gap={5}>
+                {results.map((photo, index) => {
+                    return (
+                        <div className={styles.item} data-grid-groupkey={photo.groupKey} key={index}>
+                            <div className={styles.thumbnail}>
+                                <Link to={`/images/${photo.id}`}>
+                                    <img src={photo.src.tiny} alt={photo.photographer} />
+                                </Link>
+                            </div>
+                        </div>
+                    );
+                })}
+            </MasonryInfiniteGrid>
         </Box>
     );
 };

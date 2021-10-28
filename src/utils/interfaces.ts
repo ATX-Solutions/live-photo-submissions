@@ -9,6 +9,7 @@ export interface ImageResponse {
     avg_color: string;
     src: ImageResponseSrc;
     liked: boolean;
+    groupKey?: number;
 }
 
 interface ImageResponseSrc {
