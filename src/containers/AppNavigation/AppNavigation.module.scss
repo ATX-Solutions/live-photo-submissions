@@ -6,5 +6,9 @@
 
     .appTitle {
         flex-grow: 1;
+
+        @media only screen and (max-width: 400px) {
+            display: none;
+        }
     }
 }

@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import styles from './Homepage.module.scss';
 
 const initEventSource = (setSSEConnected: any, enqueueSnackbar: any, dispatch: any): EventSource => {
-    const source = new EventSource(process.env.REACT_APP_EVENT_SOURCE_URL as string);
+    const source = new EventSource('http://localhost:8989/sse.php' as string);
 
     source.onopen = function () {
         setSSEConnected(true);

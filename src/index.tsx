@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material';
+import DateAdapter from '@mui/lab/AdapterLuxon';
+import { LocalizationProvider } from '@mui/lab';
 
 import App from './containers/App';
 
@@ -20,18 +22,20 @@ ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
             <ThemeProvider theme={theme}>
-                <SnackbarProvider
-                    maxSnack={5}
-                    autoHideDuration={APP_CONSTANTS.notifications.autoHideDuration}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    hideIconVariant
-                >
-                    <SnackbarUtilsConfigurator />
-                    <App />
-                </SnackbarProvider>
+                <LocalizationProvider dateAdapter={DateAdapter}>
+                    <SnackbarProvider
+                        maxSnack={5}
+                        autoHideDuration={APP_CONSTANTS.notifications.autoHideDuration}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }}
+                        hideIconVariant
+                    >
+                        <SnackbarUtilsConfigurator />
+                        <App />
+                    </SnackbarProvider>
+                </LocalizationProvider>
             </ThemeProvider>
         </Provider>
     </React.StrictMode>,

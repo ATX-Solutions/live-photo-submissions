@@ -22,6 +22,7 @@ const ImageDetails = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [previewLoading, setPreviewLoading] = useState<boolean>();
     const [openInNewTab, setOpenInNewTab] = useState<boolean>(false);
+    const [copyToClipboard, setCopyToClipboard] = useState<boolean>(true);
 
     useEffect(() => {
         if (params.id) {
@@ -68,13 +69,14 @@ const ImageDetails = () => {
             const response = await mockFetch(`/photos/${photo?.id}?w=${size}`, true, mock);
             setPhoto(response.data);
 
-            try {
-                await navigator.clipboard.writeText(response.data.src.custom);
-            } catch (err) {
-                console.error('copy clipboard error', err);
+            if (copyToClipboard) {
+                try {
+                    await navigator.clipboard.writeText(response.data.src.custom);
+                } catch (err) {
+                    console.error('copy clipboard error', err);
+                }
+                enqueueSnackbar(APP_CONSTANTS.messages.copiedToClipboard, { variant: 'info' });
             }
-
-            enqueueSnackbar(APP_CONSTANTS.messages.copiedToClipboard, { variant: 'info' });
 
             if (openInNewTab) {
                 window.open(response.data.src.custom);
@@ -120,15 +122,28 @@ const ImageDetails = () => {
                             lectus, et semper neque arcu at tellus. Integer malesuada velit vitae fermentum rhoncus.
                         </Typography>
                         <Box>
-                            <FormControlLabel
-                                control={<Switch checked={openInNewTab} />}
-                                label='Open in new tab'
-                                onChange={() => setOpenInNewTab(!openInNewTab)}
-                            />
-                            <Typography variant='body2'>
-                                You can choose if you want the buttons below to open the image in a new tab or to load
-                                it below. Some resolutions might now be loaded completely on your screen.
-                            </Typography>
+                            <Box>
+                                <FormControlLabel
+                                    control={<Switch checked={openInNewTab} />}
+                                    label='Open in new tab'
+                                    onChange={() => setOpenInNewTab(!openInNewTab)}
+                                />
+                                <Typography variant='body2'>
+                                    You can choose if you want the buttons below to open the image in a new tab or to
+                                    load it below. Some resolutions might now be loaded completely on your screen.
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <FormControlLabel
+                                    control={<Switch checked={copyToClipboard} />}
+                                    label='Copy to clipboard'
+                                    onChange={() => setCopyToClipboard(!copyToClipboard)}
+                                />
+                                <Typography variant='body2'>
+                                    Enabling this will copy the link of the requested image in your clipboard so you can
+                                    easily paste it.
+                                </Typography>
+                            </Box>
                         </Box>
                         <Box className={styles.buttons}>
                             <Button variant='contained' onClick={() => fetchPhotoThumbnail(48)}>

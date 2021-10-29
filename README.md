@@ -1,20 +1,21 @@
 # Todos:
 
 1. Review README
-2. Archive page filters
-3. Review SSE.
+2. Review SSE
 
 # Screens
 
-## Homepage
+## Homepage - `/`
 
 In the homepage the user is able to track what images are uploaded on the server. Once the image is uploaded, the server will dispatch an event containing that image (`ImageResponse` interface).
 
-## Archive
+## Archive - `/archive`
 
 The `Homepage` screen is great to follow the live stream of images, but I think we need a place to explore "old" images as well. This is why I added this page. Here, the user can see all the images uploaded in certain day. He can filter the content by day.
 
-## Image details
+## Image details - `/images/:id`
+
+In the brief I received there was this mention `An image will have an asset id associated with it.`. Based on the mocks I have, I decided to use the `id` property of the image to create that link, but it can be easily replaced by the asset id.
 
 The user can click on any image (in both `Homepage` & `Archive` screens) and he will be redirected to the `Image details` screen. Here he can see the image alongside other details (maybe that meta information at some point).
 Besides this he can request the image in different sizes (as requested in the brief). Here I added the option to display the request size of the image either in the same page (rendered below) or in a new tab. This option can be selected via the switch component.
@@ -47,15 +48,13 @@ In order to handle API errors, I created an interceptor and based on the status 
 Processing images is a CPU consuming task so the way I see the backend organised is like this:
 
 -   Core API (endpoints):
-    -   `/sse` => the SSE connection (`ImageResponse` interface)
+    -   `/sse` => the SSE connection (`ImageResponse` interface); every time a new photo is uploaded this service should dispatch an event.
     -   `/photos/:id` GET => return the photo details (`ImageResponse` interface)
     -   `/photos/:id?w=500&h=300` GET => return the photo details (`ImageResponse` interface) with `src.custom` property populated with the custom request.
     -   rest of the CRUD operations if needed?
 -   Independent service to process images
     -   When the core endpoint `/photos/:id?w=500&h=300` is called, the core API will call this service to get the image processed.
 -   The response should contain an URL of the photo. The photos should be served from a CDN.
-
-The `Core API` app should dispatch an event every time a new photo is uploaded.
 
 The core should expose an endpoint such `/photos/:id` that accepts query params to edit the image accordingly.
 
@@ -72,3 +71,11 @@ In order to show the SSE approach I created a repo with the SSE implementation i
 The SSE implementation is quite simple. It randomnly selects an image from those 80 images. Once in a 10 events, it also sends an error response (`APIError` interface).
 
 There is also a function defined in the frontend repo `mockFetch` to mock a request to the `Core API`. Since the pexels API provided the `/photo/:id` endpoinnt I decided to use that one instead of a mocked endpoint in order save some time. The `mockFetch` function is used only for the endpoint `/photo/:id?w=VALUE`.
+
+# Deployment
+
+No application is fun without this part. Both the frontend and the SSE are deployed using heroku.
+
+# Final notes
+
+The brief mentioned something about the application being used "remote". My assumption was that the application will be used on mobile devices as well. The application is usable on mobile devices as well, but there is room for improvements.
