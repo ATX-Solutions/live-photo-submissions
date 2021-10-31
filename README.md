@@ -1,8 +1,3 @@
-# Todos:
-
-1. Review README
-2. Review SSE
-
 # Screens
 
 ## Homepage - `/`
@@ -70,11 +65,13 @@ In order to show the SSE approach I created a repo with the SSE implementation i
 
 The SSE implementation is quite simple. It randomnly selects an image from those 80 images. Once in a 10 events, it also sends an error response (`APIError` interface).
 
-There is also a function defined in the frontend repo `mockFetch` to mock a request to the `Core API`. Since the pexels API provided the `/photo/:id` endpoinnt I decided to use that one instead of a mocked endpoint in order save some time. The `mockFetch` function is used only for the endpoint `/photo/:id?w=VALUE`.
+There is also a function defined in the frontend repo `mockFetch` to mock a request to the `Core API`. Since the pexels API provided the `/photo/:id` endpoint I decided to use that one instead of a mocked endpoint in order save some time. The `mockFetch` function is used only for the endpoint `/photo/:id?w=VALUE`.
 
 # Deployment
 
 No application is fun without this part. Both the frontend and the SSE are deployed using heroku.
+
+https://live-photo-submissions-app.herokuapp.com/
 
 # Final notes
 
